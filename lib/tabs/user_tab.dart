@@ -19,6 +19,7 @@ class UsersTab extends StatelessWidget {
                 hintStyle: TextStyle(color: Colors.white),
                 icon: Icon(Icons.search, color: Colors.white),
                 border: InputBorder.none),
+            onChanged: _userBloc.onChangedSearch,
           ),
         ),
         Expanded(
@@ -31,7 +32,7 @@ class UsersTab extends StatelessWidget {
               );
             } else if (snapshot.data.length == 0) {
               return Center(
-                child: Text("Nenhum usuário encontrado"),
+                child: Text("Nenhum usuário encontrado", style: TextStyle(color: Colors.pinkAccent),),
               );
             } else {
               return ListView.separated(
