@@ -1,4 +1,7 @@
+import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:flutter/material.dart';
+import 'package:gerente_loja/blocs/user_bloc.dart';
+import 'package:gerente_loja/tabs/user_tab.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -6,71 +9,74 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   PageController _pageController;
   int _page = 0;
 
+  UserBloc _userBloc;
+
   @override
-  void initState(){
+  void initState() {
     super.initState();
 
     _pageController = PageController();
+
+    _userBloc = UserBloc();
   }
 
   @override
-  void dispose(){
+  void dispose() {
     _pageController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[850],
-      bottomNavigationBar: Theme(
-        data: Theme.of(context).copyWith(
-          canvasColor: Colors.pinkAccent,
-          primaryColor: Colors.white,
-          textTheme: Theme.of(context).textTheme.copyWith(
-            caption: TextStyle(color: Colors.white)
-          )
+        backgroundColor: Colors.grey[850],
+        bottomNavigationBar: Theme(
+          data: Theme.of(context).copyWith(
+              canvasColor: Colors.pinkAccent,
+              primaryColor: Colors.white,
+              textTheme: Theme.of(context)
+                  .textTheme
+                  .copyWith(caption: TextStyle(color: Colors.white))),
+          child: BottomNavigationBar(
+            currentIndex: _page,
+            onTap: (p) {
+              _pageController.animateToPage(p,
+                  duration: Duration(milliseconds: 500), curve: Curves.ease);
+            },
+            items: [
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.person), title: Text("Clientes")),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.shopping_cart), title: Text("Pedidos")),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.list), title: Text("Produtos")),
+            ],
+          ),
         ),
-        child: BottomNavigationBar(
-          currentIndex: _page,
-          onTap: (p){
-            _pageController.animateToPage(
-              p,
-              duration: Duration(milliseconds: 500),
-              curve: Curves.ease
-            );
-          },
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            title: Text("Clientes")
+        body: SafeArea(
+            //Cria margin da tab do celular
+            child: BlocProvider<UserBloc>(
+          bloc: _userBloc,
+          child: PageView(
+            onPageChanged: (p) {
+              setState(() {
+                _page = p;
+              });
+            },
+            controller: _pageController,
+            children: <Widget>[
+              UsersTab(),
+              Container(
+                color: Colors.yellow,
+              ),
+              Container(
+                color: Colors.green,
+              ),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart),
-            title: Text("Pedidos")
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            title: Text("Produtos")
-          ),
-        ],
-      ),
-      ),
-      body: PageView(
-        onPageChanged: (p){
-          setState(() {
-           _page = p; 
-          });
-        },
-        controller: _pageController,
-        children: <Widget>[
-          Container(color: Colors.red,),
-          Container(color: Colors.yellow,),
-          Container(color: Colors.green,),
-      ],),
-    );
+        )));
   }
 }
